@@ -11,12 +11,14 @@ export async function getGames(req, res) {
 }
 
 export async function postGames(req, res) {
-  if (req.body.name.length === 0 || parseFloat(req.body.stockTotal) === 0 || parseFloat(req.body.pricePerDay) === 0) {
+  const {name, image, stockTotal, categoryId, pricePerDay} = req.body
+
+  if (name.length === 0 || parseFloat(stockTotal) === 0 || parseFloat(pricePerDay) === 0) {
     return res.sendStatus(400)
   }
 
   const nameTest = await connection.query(
-    `SELECT * FROM games WHERE name='${req.body.name}'`
+    `SELECT * FROM games WHERE name='${name}'`
   );
 
   if (nameTest.rows[0]) {
@@ -24,7 +26,7 @@ export async function postGames(req, res) {
   }
 
   const idTest = await connection.query(
-    `SELECT * FROM categories WHERE id='${req.body.categoryId}'`
+    `SELECT * FROM categories WHERE id='${categoryId}'`
   );
 
   if (!idTest.rows[0]) {
@@ -33,7 +35,7 @@ export async function postGames(req, res) {
 
   await connection.query(
     `INSERT INTO games (name, image, "stockTotal", "categoryId", "pricePerDay") 
-      VALUES ('${req.body.name}','${req.body.image}',${parseFloat(req.body.stockTotal)},${req.body.categoryId},${parseFloat(req.body.pricePerDay)})`
+      VALUES ('${name}','${image}',${parseFloat(stockTotal)},${categoryId},${parseFloat(pricePerDay)})`
   );
 
   res.sendStatus(201);

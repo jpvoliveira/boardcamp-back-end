@@ -6,12 +6,14 @@ export async function getCategories (req,res){
 }
 
 export async function postCategories (req,res){
-    if (req.body.name.length===0) {
+    const { name } = req.body;
+
+    if (name.length===0) {
         return res.sendStatus(400)
     }
 
     const nameTest = await connection.query(
-    `SELECT * FROM categories WHERE name='${req.body.name}'`
+    `SELECT * FROM categories WHERE name='${name}'`
     );
 
     if (nameTest.rows[0]) {
@@ -20,11 +22,11 @@ export async function postCategories (req,res){
 
     const categories = await connection.query('SELECT * FROM categories');
     for (let i = 0; i < categories.rows.length; i++) {
-        if (categories.rows[i].name === req.body.name) {
+        if (categories.rows[i].name === name) {
             return res.sendStatus(409)
         }
     }
     
-    await connection.query(`INSERT INTO categories (name) VALUES ('${req.body.name}')`);
+    await connection.query(`INSERT INTO categories (name) VALUES ('${name}')`);
     res.sendStatus(201)
 }
