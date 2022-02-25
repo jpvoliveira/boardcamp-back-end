@@ -5,9 +5,17 @@ export async function getCategories (req,res){
     res.send(result.rows)
 }
 
-export async function getAddCategories (req,res){
+export async function postCategories (req,res){
     if (req.body.name.length===0) {
         return res.sendStatus(400)
+    }
+
+    const nameTest = await connection.query(
+    `SELECT * FROM categories WHERE name='${req.body.name}'`
+    );
+
+    if (nameTest.rows[0]) {
+        return res.sendStatus(409)
     }
 
     const categories = await connection.query('SELECT * FROM categories');
